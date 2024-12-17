@@ -1,5 +1,6 @@
 package com.francisco.springsecOAUTH2.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -12,6 +13,12 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class ProjectSecurityConfig {
+
+    @Value("${github.client-id}")
+    private String clientId;
+
+    @Value("${github.client-secret}")
+    private String clientSecret;
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -29,16 +36,21 @@ public class ProjectSecurityConfig {
     @Bean
     ClientRegistrationRepository clientRegistrationRepository() {
         ClientRegistration github = githubClientRegistration();
-        ClientRegistration facebook = facebookClientRegistration();
-        return new InMemoryClientRegistrationRepository(github, facebook);
+        /*ClientRegistration facebook = facebookClientRegistration();*/
+        return new InMemoryClientRegistrationRepository(github);
     }
 
     private ClientRegistration githubClientRegistration() {
-        return CommonOAuth2Provider.GITHUB.getBuilder("github").clientId("").clientSecret("").build();
+        return CommonOAuth2Provider
+                .GITHUB
+                .getBuilder("github")
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .build();
     }
 
-    private ClientRegistration facebookClientRegistration() {
+    /*private ClientRegistration facebookClientRegistration() {
         return CommonOAuth2Provider.FACEBOOK.getBuilder("facebook").clientId("").clientSecret("").build();
-    }
+    }*/
 
 }
